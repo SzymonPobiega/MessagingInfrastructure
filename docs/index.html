@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Distributed asynchronous microservices: why bother?</title>
+		<meta name="description" content="Distributed asynchronous microservices: why bother?">
+		<meta name="author" content="Szymon Pobiega">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/night.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+
+		<style media="screen" type="text/css">
+			.reveal section img { background:none; border:none; box-shadow:none; }
+
+			.reveal table {
+			  margin: auto;
+			  border-collapse: collapse;
+			  border-spacing: 0;
+			}
+
+			.reveal table th {
+			  font-weight: bold;
+			}
+
+			.reveal table th,
+			.reveal table td {
+			  text-align: left;
+			  padding: 0.2em 0.5em 0.2em 0.5em;
+			  border-bottom: 1px solid;
+			}
+
+			.highlight-inline {
+            	background:yellow;
+            	color:black;
+			}
+			
+			.highlight-inline span {
+				background:inherit;
+				color:inherit;
+			}
+
+			.reveal pre code {
+				font-size: 1.4em;
+				line-height: 1.2;
+			}
+
+			img.zoom-island {
+				transform: translate(0, -15%);
+			}
+
+			img.zoom-centre {
+				transform: scale(2.1) translate(0, 0);
+			}
+			
+			img.zoom-left-centre {
+				transform: scale(2.2) translate(25%, 0);
+			}
+
+			img.zoom-left-top {
+				transform: scale(2.2) translate(25%, 30%);
+			}
+
+			img.zoom-left-bottom {
+				transform: scale(2.2) translate(25%, -25%);
+			}
+
+			img.zoom-right-centre {
+				transform: scale(1.8) translate(-25%, 0);
+			}
+
+			img.zoom-right-top {
+				transform: scale(2.4) translate(-25%, 20%);
+			}
+
+			img.zoom-right-centre-top {
+				transform: scale(2.4) translate(-25%, 0);
+			}
+
+			img.zoom-right-bottom {
+				transform: scale(2.4) translate(-25%, -25%);
+			}
+			#footer-left {
+				position: absolute;
+				bottom: 5%;
+				left: 2%;
+			}
+			.container{
+				display: flex;
+			}
+			.col{
+				flex: 1;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h2>Distributed asynchronous microservices: why bother?</h2>
+					<p><a href="https://exactly-once.github.io/">exactly-once.github.io</a></p>
+					<p><a href="https://twitter.com/SzymonPobiega">twitter.com/SzymonPobiega</a></p>
+					<p><a href="https://www.linkedin.com/in/szymonpobiega/">linkedin.com/in/SzymonPobiega</a></p>
+				</section>
+				<section>
+					<h2 class="fragment">Domain-Driven Design</h2>
+					<h2 class="fragment">Event Sourcing</h2>
+					<h2 class="fragment">Message delivery &amp; processing</h2>
+				</section>
+				<section>
+					<img src="images/lego1.jpg" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/lego2.jpg" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/lego4.jpg" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/jura.jpg" class="stretch"/>
+				</section>
+				<section>
+					<h1><p>Distributed?</p>
+						<p>But why?</p>
+					</h1>
+				</section>
+				<section>
+					<h2>What defines architecture?</h2>
+					<h3 class="fragment">Availability of capital</h3>
+					<h3 class="fragment">Availability of workers</h3>
+					<h3 class="fragment">Management methodologies</h3>
+				</section>
+				<section>
+					<h2>Microservices is a product of</h2>
+					<h3 class="fragment">Abundance of capital</h3>
+					<h3 class="fragment">Shortage of software engineers</h3>
+					<h3 class="fragment">Decentralized management</h3>
+				</section>
+				<section>
+					<img src="images/architect.jpg" class="stretch"/>
+				</section>
+				<section>
+					<h2>The Pragmatist</h2>
+					<img src="images/rainbow dash.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">Designs the minimal thing that works</h3>
+					<h3 class="fragment">Optimizes for the lowest number of moving parts</h3>
+					<h3 class="fragment">Adds complexity as needed</h3>
+				</section>
+				<section>
+					<img src="images/pragmatist-1.png" class="stretch"/>
+				</section>
+				<section>
+					<h2>The Tactician</h2>
+					<img src="images/rarity.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">Uses small scale building blocks</h3>
+					<h3 class="fragment">Ignores high-level components</h3>
+					<h3 class="fragment">Optimizes for uniformity</h3>
+				</section>
+				<section>
+					<img src="images/tactician-2.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/tactician-1.png" class="stretch"/>
+				</section>
+				<section>
+					<h2>The Builder</h2>
+					<img src="images/pinkie pie.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">Divides the system into many components based on their functionality</h3>
+					<h3 class="fragment">Optimizes for low coupling at design-time</h3>
+				</section>
+				<section>
+					<img src="images/builder-1.png" class="stretch"/>
+				</section>
+				<section>
+					<h2>The Strategist</h2>
+					<img src="images/flutter shy.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">Divides the sysyem into many components based on their functionality</h3>
+					<h3 class="fragment">Optimizes for low coupling at <span style="color: red;">run-time</span></h3>
+				</section>
+				<section>
+					<img src="images/strategist-1.png" class="stretch"/>
+				</section>
+				<section>
+					<h2>The Purist</h2>
+					<img src="images/twilight.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">Divides the sysyem into <span style="color: red;">few</span> components based on data they own</h3>
+					<h3 class="fragment">Optimizes for low data coupling</h3>
+				</section>
+				<section>
+					<img src="images/purist-1.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/sales.png" class="stretch"/>
+				</section>
+				<section>
+					<h2>The Pragmatist</h2>
+					<img src="images/rainbow dash.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/pragmatist-2.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/pragmatist-3.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">A mix of small, medium and large components</h3>
+					<h3 class="fragment">Many different communication styles</h3>
+					<h3 class="fragment">No defined flow or control or data</h3>
+				</section>
+				<section>
+					<h2>The Tactician</h2>
+					<img src="images/rarity.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/tactician-3.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">A stew</h3>
+					<h3 class="fragment">Control and data flows in all directions</h3>
+				</section>
+				<section>
+					<h2>The Builder</h2>
+					<img src="images/pinkie pie.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/builder-2.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/builder-3.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">Data flows through components, control is contained</h3>
+					<h3 class="fragment">Store-and-forward pattern used when business transaction is not aligned with component boundary</h3>
+				</section>
+				<section>
+					<h2>The Strategist</h2>
+					<img src="images/flutter shy.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/strategist-1.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/strategist-2.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/strategist-3.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">Data flows through components, control is <span style="color: red;">mostly</span> contained</h3>
+					<h3 class="fragment">Components tend to accumulate more and more data over time</h3>
+				</section>
+				<section>
+					<h2>The Purist</h2>
+					<img src="images/twilight.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/purist-1.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">Can hardly add more complexity to it 😂</h3>
+					<h3 class="fragment">Core is clean. Complexity is pushed to the edges</h3>
+					<h3 class="fragment">The bigger the core to edge ratio, the more benefits</h3>
+				</section>
+				<section>
+					<h2 class="fragment strike">Distributed systems</h2>
+					<h1 class="fragment">Distributed processes</h1>
+				</section>
+				<section>
+					<img src="images/communication.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/what-do-we-want.png" width="30%" style="float: right"/>
+					<ul style="width: 60%;">
+						<li class="fragment"><h3>Don't lose messages</h3></li>
+						<li class="fragment"><h3>Outcome the same no matter how many times we process the message (idempotence)</h3></li>
+						<li class="fragment"><h3>Don't leak non-durable state (ghost messages)</h3></li>
+					</ul>
+				</section>
+				<section>
+					<blockquote cite="https://exactly-once.github.io/posts/consistent-messaging/" style="width: 100%;">
+<h3>
+	"... we want an endpoint to produce observable side-effects equivalent to some execution in which each logical message gets processed exactly-once" 
+</h3>
+	-- Tomasz Masternak				
+</blockquote>
+
+				</section>
+				<section>
+					<h1>Consistent messaging</h1>
+				</section>
+				<section>
+					<h1>Model</h1>
+				</section>
+				<section>
+					<img src="images/messaging-model.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/all-or-nothing.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/sqlt.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/msmq-dtc.png" class="stretch"/>
+				</section>
+				<section>
+					<h1>Look ma! No transactions</h1>
+					<h2>in the cloud</h2>
+				</section>
+				<section>
+					<img src="images/atomic-inbox.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/atomic-outbox.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/nsb-outbox.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/nsb-outbox-nsb.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/nsb-outbox-overflow.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">De-duplication record is created when message is processed</h3>
+					<h3 class="fragment">De-duplication record is present in <span style="color: red;">at least one</span> store</h3>
+				</section>
+				<section>
+					<img src="images/inbox-outbox.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/inbox-outbox-overflow.png" class="stretch"/>
+				</section>
+				<section>
+					<h1>256 KB ?!?</h1>
+				</section>
+				<section>
+					<img src="images/inbox-outbox-claimcheck.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">Architecture <span style="color: red;">is not</span> an exact science</h3>
+					<h3 class="fragment">Process distribution is not specific to any architectural style</h3>
+					<h3 class="fragment">Process distribution requires consistent messaging</h3>
+					<h3 class="fragment">Consistent messaging <span style="color: red;">is</span> an exact science</h3>
+				</section>
+				<section>
+					<h1>Thank you!</h1>
+					<p><a href="https://github.com/SzymonPobiega/NServiceBus.Router">github.com/SzymonPobiega/NServiceBus.Router</a></p>
+					<p><a href="https://exactly-once.github.io/">exactly-once.github.io</a></p>
+					<p><a href="https://twitter.com/SzymonPobiega">twitter.com/SzymonPobiega</a></p>
+					<p><a href="https://www.linkedin.com/in/szymonpobiega/">linkedin.com/in/SzymonPobiega</a></p>
+				</section>
+				<section>
+					<img src="images/devdays-europe.png" class="stretch"/>
+				</section>
+				<section>
+					<div class="container">
+						<div class="col">
+							<ul>
+								<p><span style="color: red;">rg-dev</span></p>
+								<p class="fragment">Voxed Days Banff</p>
+								<p class="fragment">O'Reilly Software Architecture</p>
+								<p class="fragment">CoreDump</p>
+								<p class="fragment">GeeCON</p>
+								<p class="fragment">Rzemiosło.IT</p>
+								<p class="fragment">DevDays Europe</p>
+								<p class="fragment">Developer Day Nuremburg</p>
+								<p class="fragment">DDD-KRK</p>
+							</ul>
+						</div>
+						<div class="col">
+							<ul>
+								<p class="fragment">DDD-WRO</p>
+								<p class="fragment">Agile Dev UG Durban</p>
+								<p class="fragment">ExploreDDD</p>
+								<p class="fragment">DDD London</p>
+								<p class="fragment">CodeMotion Milan</p>
+								<p class="fragment"><span style="color: red;">rg-dev</span></p>
+								<p class="fragment">DDD-WAW</p>
+								<p class="fragment">NDC London</p>
+								<p class="fragment">ConFoo Montreal</p>
+							</ul>
+						</div>
+					</div>
+				</section>
+				<section>
+					<img src="images/blog.png" class="stretch"/>
+				</section>
+			</div>
+		</div>
+
+		<div id="hidden" style="display:none;">
+			<div id="header">
+				<div id="footer-left">@SzymonPobiega | exactly-once.github.io</div>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="lib/js/jquery-2.1.4.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+		$(function() {
+
+			$('img.demo').each(function(i, img){
+				var $img = $(img);
+				var prefix = $img.data('img-prefix');
+				var frames = $img.data('frames');
+				var suffix = $img.data('suffix') || '.jpg';
+				if (typeof frames !== 'undefined') {
+					var div = $('<div></div>')
+					for (var i = 1; i < frames; i++) {
+						div.append('<span class="fragment imgsrc" data-src="'+prefix+'-'+i+suffix+'"/>')
+					}
+					$img.after(div);
+				}
+				$img.attr('src', prefix+'-'+0+suffix)
+			})
+		});
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				margin: 0,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				math: {
+					// mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+					config: 'TeX-AMS_HTML-full'
+				},
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { 
+						hljs.initHighlightingOnLoad(); 
+						hljs.configure({tabReplace: '   '})
+						} },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+
+			function fadeImage($el) {
+				// Get image DOM element
+				$img = $el.parent().prev();
+
+				$img.removeClass();
+				$img.addClass('demo');
+
+				var src = $el.data('src');
+				if (typeof src !== `undefined`) {
+					$img.attr('src', src)
+				}
+
+				var index = $el.data('index');
+				if (typeof index !== `undefined`) {
+					var prefix = $img.data('img-prefix');
+					var suffix = $img.data('suffix') || '.jpg';
+					if (typeof prefix !== `undefined`) {
+						$img.attr('src', prefix+'-'+index+suffix)
+					}
+				}
+
+				var transform = $el.data('transform');
+				if (typeof transform !== `undefined`) {
+					$img.addClass(transform);
+				}
+			}
+
+			Reveal.addEventListener( 'slidechanged', function( event ) {
+				var $slide = $(event.currentSlide);
+				var $img = $slide.children('img');
+				var prefix = $img.data('img-prefix');
+				var suffix = $img.data('suffix') || '.jpg';
+				if (typeof prefix !== `undefined`) {
+					$img.attr('src', prefix+'-'+0+suffix)
+				}
+			} );
+
+			// var header = $('#header').html();
+			// if ( window.location.search.match( /print-pdf/gi ) ) {
+			// 	Reveal.addEventListener( 'ready', function( event ) {
+			// 		$('.slide-background').append(header);
+			// 	});
+			// }
+			// else {
+			// 	$('div.reveal').append(header);
+			// }
+
+			Reveal.addEventListener('fragmentshown', function(event) {
+				// Get DOM element of current fragment
+				var $el = $(event.fragment);
+
+				// Check if current fragment is of 'type' imgsrc
+				// If yes: fade image with source of current element
+				if($el.hasClass('imgsrc'))
+					fadeImage($el);
+			});
+
+			Reveal.addEventListener('fragmenthidden', function(event) {
+				// Get DOM element of current fragment
+				var $el = $(event.fragment);
+
+				// Check if current fragment is of 'type' imgsrc
+				// If yes: fade image with source of previous element
+				if($el.hasClass('imgsrc')) {
+					fadeImage($el.prev());
+				}
+			});
+
+		</script>
+
+	</body>
+</html>
