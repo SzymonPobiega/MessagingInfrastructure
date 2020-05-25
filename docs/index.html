@@ -4,8 +4,8 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>Distributed asynchronous microservices: why bother?</title>
-		<meta name="description" content="Distributed asynchronous microservices: why bother?">
+		<title>In the cloud message broker is an implementation detail</title>
+		<meta name="description" content="In the cloud message broker is an implementation detail">
 		<meta name="author" content="Szymon Pobiega">
 
 		<meta name="apple-mobile-web-app-capable" content="yes">
@@ -113,14 +113,25 @@
 			.col{
 				flex: 1;
 			}
+			.particular-logo {
+				position: fixed;
+				height: 80px;
+				z-index: 30;
+				left: 20px;
+				bottom: 20px;
+			}
 		</style>
 	</head>
 
 	<body>
 		<div class="reveal">
+			<aside class="particular-logo">
+				<img src="images/particular-logo-2.svg" height="100em"/>
+			</aside>
 			<div class="slides">
 				<section>
-					<h2>Distributed asynchronous microservices: why bother?</h2>
+					<h3>In the cloud</h3>
+					<h2>message broker is an implementation detail</h2>
 					<p><a href="https://exactly-once.github.io/">exactly-once.github.io</a></p>
 					<p><a href="https://twitter.com/SzymonPobiega">twitter.com/SzymonPobiega</a></p>
 					<p><a href="https://www.linkedin.com/in/szymonpobiega/">linkedin.com/in/SzymonPobiega</a></p>
@@ -131,22 +142,23 @@
 					<h2 class="fragment">Message delivery &amp; processing</h2>
 				</section>
 				<section>
-					<img src="images/lego1.jpg" class="stretch"/>
-				</section>
-				<section>
-					<img src="images/lego2.jpg" class="stretch"/>
-				</section>
-				<section>
-					<img src="images/lego4.jpg" class="stretch"/>
-				</section>
-				<section>
-					<img src="images/jura.jpg" class="stretch"/>
-				</section>
-				<section>
-					<h1><p>Distributed?</p>
+					<h1><p>Broker?</p>
 						<p>But why?</p>
 					</h1>
 				</section>
+				<section>
+						<h3>
+						<pre class="stretch"><code class="sql" data-noescape data-trim data-line-numbers="2|6|4|5|7">
+	with msg as (
+		select top (1) * from Msg 
+			with (
+				updlock, 
+				readpast) 
+			order by Seq
+	) delete from msg output Payload
+						</code></pre>
+						</h3>
+					</section>
 				<section>
 					<h2>What defines architecture?</h2>
 					<h3 class="fragment">Availability of capital</h3>
@@ -163,7 +175,6 @@
 					<img src="images/architect.jpg" class="stretch"/>
 				</section>
 				<section>
-					<h2>The Pragmatist</h2>
 					<img src="images/rainbow dash.png" class="stretch"/>
 				</section>
 				<section>
@@ -175,7 +186,12 @@
 					<img src="images/pragmatist-1.png" class="stretch"/>
 				</section>
 				<section>
-					<h2>The Tactician</h2>
+					<img src="images/pragmatist-2.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/pragmatist-3.png" class="stretch"/>
+				</section>
+				<section>
 					<img src="images/rarity.png" class="stretch"/>
 				</section>
 				<section>
@@ -190,7 +206,9 @@
 					<img src="images/tactician-1.png" class="stretch"/>
 				</section>
 				<section>
-					<h2>The Builder</h2>
+					<img src="images/tactician-3.png" class="stretch"/>
+				</section>
+				<section>
 					<img src="images/pinkie pie.png" class="stretch"/>
 				</section>
 				<section>
@@ -201,73 +219,20 @@
 					<img src="images/builder-1.png" class="stretch"/>
 				</section>
 				<section>
-					<h2>The Strategist</h2>
-					<img src="images/flutter shy.png" class="stretch"/>
-				</section>
-				<section>
-					<h3 class="fragment">Divides the sysyem into many components based on their functionality</h3>
-					<h3 class="fragment">Optimizes for low coupling at <span style="color: red;">run-time</span></h3>
-				</section>
-				<section>
-					<img src="images/strategist-1.png" class="stretch"/>
-				</section>
-				<section>
-					<h2>The Purist</h2>
-					<img src="images/twilight.png" class="stretch"/>
-				</section>
-				<section>
-					<h3 class="fragment">Divides the sysyem into <span style="color: red;">few</span> components based on data they own</h3>
-					<h3 class="fragment">Optimizes for low data coupling</h3>
-				</section>
-				<section>
-					<img src="images/purist-1.png" class="stretch"/>
-				</section>
-				<section>
-					<img src="images/sales.png" class="stretch"/>
-				</section>
-				<section>
-					<h2>The Pragmatist</h2>
-					<img src="images/rainbow dash.png" class="stretch"/>
-				</section>
-				<section>
-					<img src="images/pragmatist-2.png" class="stretch"/>
-				</section>
-				<section>
-					<img src="images/pragmatist-3.png" class="stretch"/>
-				</section>
-				<section>
-					<h3 class="fragment">A mix of small, medium and large components</h3>
-					<h3 class="fragment">Many different communication styles</h3>
-					<h3 class="fragment">No defined flow or control or data</h3>
-				</section>
-				<section>
-					<h2>The Tactician</h2>
-					<img src="images/rarity.png" class="stretch"/>
-				</section>
-				<section>
-					<img src="images/tactician-3.png" class="stretch"/>
-				</section>
-				<section>
-					<h3 class="fragment">A stew</h3>
-					<h3 class="fragment">Control and data flows in all directions</h3>
-				</section>
-				<section>
-					<h2>The Builder</h2>
-					<img src="images/pinkie pie.png" class="stretch"/>
-				</section>
-				<section>
 					<img src="images/builder-2.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/builder-2-1.png" class="stretch"/>
 				</section>
 				<section>
 					<img src="images/builder-3.png" class="stretch"/>
 				</section>
 				<section>
-					<h3 class="fragment">Data flows through components, control is contained</h3>
-					<h3 class="fragment">Store-and-forward pattern used when business transaction is not aligned with component boundary</h3>
+					<img src="images/flutter shy.png" class="stretch"/>
 				</section>
 				<section>
-					<h2>The Strategist</h2>
-					<img src="images/flutter shy.png" class="stretch"/>
+					<h3 class="fragment">Divides the system into many components based on their functionality</h3>
+					<h3 class="fragment">Optimizes for low coupling at <span style="color: red;">run-time</span></h3>
 				</section>
 				<section>
 					<img src="images/strategist-1.png" class="stretch"/>
@@ -279,20 +244,14 @@
 					<img src="images/strategist-3.png" class="stretch"/>
 				</section>
 				<section>
-					<h3 class="fragment">Data flows through components, control is <span style="color: red;">mostly</span> contained</h3>
-					<h3 class="fragment">Components tend to accumulate more and more data over time</h3>
-				</section>
-				<section>
-					<h2>The Purist</h2>
 					<img src="images/twilight.png" class="stretch"/>
 				</section>
 				<section>
-					<img src="images/purist-1.png" class="stretch"/>
+					<h3 class="fragment">Divides the system into <span style="color: red;">few</span> components based on data they own</h3>
+					<h3 class="fragment">Optimizes for low data coupling</h3>
 				</section>
 				<section>
-					<h3 class="fragment">Can hardly add more complexity to it 😂</h3>
-					<h3 class="fragment">Core is clean. Complexity is pushed to the edges</h3>
-					<h3 class="fragment">The bigger the core to edge ratio, the more benefits</h3>
+					<img src="images/purist-1.png" class="stretch"/>
 				</section>
 				<section>
 					<h2 class="fragment strike">Distributed systems</h2>
@@ -310,6 +269,12 @@
 					</ul>
 				</section>
 				<section>
+					<h3 class="fragment">Architecture <span style="color: red;">is not</span> an exact science</h3>
+					<h3 class="fragment">Process distribution is not specific to any architectural style</h3>
+					<h3 class="fragment">Process distribution requires consistent messaging</h3>
+					<h3 class="fragment">Consistent messaging <span style="color: red;">is</span> an exact science</h3>
+				</section>
+				<section>
 					<blockquote cite="https://exactly-once.github.io/posts/consistent-messaging/" style="width: 100%;">
 <h3>
 	"... we want an endpoint to produce observable side-effects equivalent to some execution in which each logical message gets processed exactly-once" 
@@ -325,57 +290,123 @@
 					<h1>Model</h1>
 				</section>
 				<section>
-					<img src="images/messaging-model.png" class="stretch"/>
+					<img src="images/messaging-model-simple.png" class="stretch"/>
 				</section>
 				<section>
-					<img src="images/all-or-nothing.png" class="stretch"/>
+					<img src="images/messaging-model-inbox-outbox-transport.png" class="stretch"/>
 				</section>
 				<section>
-					<img src="images/sqlt.png" class="stretch"/>
+					<img src="images/messaging-model-inbox-outbox-transport-2.png" class="stretch"/>
 				</section>
 				<section>
-					<img src="images/msmq-dtc.png" class="stretch"/>
+					<img src="images/messaging-model-inbox-outbox-transport-trigger.png" class="stretch"/>
 				</section>
 				<section>
-					<h1>Look ma! No transactions</h1>
-					<h2>in the cloud</h2>
+					<img src="images/messaging-model-transaction.png" class="stretch"/>
 				</section>
 				<section>
-					<img src="images/atomic-inbox.png" class="stretch"/>
+					<img src="images/messaging-model-msmq.png" class="stretch"/>
 				</section>
 				<section>
-					<img src="images/atomic-outbox.png" class="stretch"/>
+					<img src="images/messaging-model-msmq-dtc.png" class="stretch"/>
 				</section>
 				<section>
-					<img src="images/nsb-outbox.png" class="stretch"/>
+					<img src="images/messaging-model-simple-transaction.png" class="stretch"/>
 				</section>
 				<section>
-					<img src="images/nsb-outbox-nsb.png" class="stretch"/>
+					<img src="images/messaging-model-sql.png" class="stretch"/>
 				</section>
 				<section>
-					<img src="images/nsb-outbox-overflow.png" class="stretch"/>
+					<img src="images/messaging-model-sql-nsb.png" class="stretch"/>
 				</section>
 				<section>
-					<h3 class="fragment">De-duplication record is created when message is processed</h3>
+					<h2><span style="color: red;">15</span> x <span style="color: blue;">50 msg/s</span> - <span style="color: green;">8 vCPU</span> @ <span style="color: yellow;">15%</span></h2>
+					<h2 class="fragment">4 320 000</h2>
+					<h2 class="fragment">$ 48.42</h2>
+				</section>
+				<section>
+					<h1>Web Scale</h1>
+				</section>
+				<section>
+					<img src="images/messaging-model-transaction.png" class="stretch"/>
+				</section>
+				<section>
+					<h1>De-duplication</h1>
+				</section>
+				<section>
+					<img src="images/messaging-model-outbox-transaction.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/messaging-model-outbox.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/messaging-model-outbox-data.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/messaging-model-outbox-tech.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/messaging-model-outbox-tech-nsb.png" class="stretch"/>
+				</section>
+				<section>
+					<h3>De-duplication record is created when message is processed</h3>
 					<h3 class="fragment">De-duplication record is present in <span style="color: red;">at least one</span> store</h3>
 				</section>
 				<section>
-					<img src="images/inbox-outbox.png" class="stretch"/>
+					<img src="images/messaging-model-outbox-dedup.png" class="stretch"/>
 				</section>
 				<section>
-					<img src="images/inbox-outbox-overflow.png" class="stretch"/>
+					<img src="images/messaging-model-outbox-dedup-tech.png" class="stretch"/>
 				</section>
 				<section>
-					<h1>256 KB ?!?</h1>
+					<h1>Consistency</h1>
 				</section>
 				<section>
-					<img src="images/inbox-outbox-claimcheck.png" class="stretch"/>
+					<blockquote cite="https://docs.aws.amazon.com/AmazonS3/latest/dev/Introduction.html#ConsistencyModel" style="width: 100%;">
+						Amazon S3 provides read-after-write consistency for PUTS of new objects in your S3 bucket in all regions with one caveat. The caveat is that if you make a HEAD or GET request to the key name (to find if the object exists) before creating the object, Amazon S3 provides eventual consistency for read-after-write.			
+					</blockquote>
 				</section>
 				<section>
-					<h3 class="fragment">Architecture <span style="color: red;">is not</span> an exact science</h3>
-					<h3 class="fragment">Process distribution is not specific to any architectural style</h3>
-					<h3 class="fragment">Process distribution requires consistent messaging</h3>
-					<h3 class="fragment">Consistent messaging <span style="color: red;">is</span> an exact science</h3>
+					<h1>Enterprise?</h1>
+				</section>
+				<section>
+					<img src="images/messaging-model-maximum-size.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/messaging-model-claim-check.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/messaging-model-claim-check-tech.png" class="stretch"/>
+				</section>
+				<section>
+					<h2>How many times can you delete a thing?</h2>
+				</section>
+				<section>
+					<img src="images/messaging-model-claim-check-2.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/messaging-model-claim-check-tech-2.png" class="stretch"/>
+				</section>
+				<section>
+					<h2>When can two services communicate?</h2>
+				</section>
+				<section>
+					<img src="images/messaging-model-inbox-outbox-transport-trigger.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/communication-compatibility.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/communication-compatibility-router.png" class="stretch"/>
+				</section>
+				<section>
+					<h3 class="fragment">Message broker is an implementation detail</h3>
+					<h3 class="fragment">De-duplication protocol is part of the contract</h3>
+				</section>
+				<section>
+					<h3 class="fragment">Cloud requires different mental models for technology</h3>
+					<h3 class="fragment">Using SQL database as a message queue can get you quite far</h3>
+					<h3 class="fragment">Exactly-once message processing is possible for infinite scale databases</h3>
 				</section>
 				<section>
 					<h1>Thank you!</h1>
@@ -383,39 +414,6 @@
 					<p><a href="https://exactly-once.github.io/">exactly-once.github.io</a></p>
 					<p><a href="https://twitter.com/SzymonPobiega">twitter.com/SzymonPobiega</a></p>
 					<p><a href="https://www.linkedin.com/in/szymonpobiega/">linkedin.com/in/SzymonPobiega</a></p>
-				</section>
-				<section>
-					<img src="images/devdays-europe.png" class="stretch"/>
-				</section>
-				<section>
-					<div class="container">
-						<div class="col">
-							<ul>
-								<p><span style="color: red;">rg-dev</span></p>
-								<p class="fragment">Voxed Days Banff</p>
-								<p class="fragment">O'Reilly Software Architecture</p>
-								<p class="fragment">CoreDump</p>
-								<p class="fragment">GeeCON</p>
-								<p class="fragment">Rzemiosło.IT</p>
-								<p class="fragment">DevDays Europe</p>
-								<p class="fragment">Developer Day Nuremburg</p>
-								<p class="fragment">DDD-KRK</p>
-							</ul>
-						</div>
-						<div class="col">
-							<ul>
-								<p class="fragment">DDD-WRO</p>
-								<p class="fragment">Agile Dev UG Durban</p>
-								<p class="fragment">ExploreDDD</p>
-								<p class="fragment">DDD London</p>
-								<p class="fragment">CodeMotion Milan</p>
-								<p class="fragment"><span style="color: red;">rg-dev</span></p>
-								<p class="fragment">DDD-WAW</p>
-								<p class="fragment">NDC London</p>
-								<p class="fragment">ConFoo Montreal</p>
-							</ul>
-						</div>
-					</div>
 				</section>
 				<section>
 					<img src="images/blog.png" class="stretch"/>
