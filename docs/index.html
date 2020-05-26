@@ -63,8 +63,13 @@
 			}
 
 			.reveal pre code {
-				font-size: 1.4em;
+				font-size: 1.3em;
 				line-height: 1.2;
+			}
+
+			section img {
+				padding-bottom: 50px;
+				padding-top: 50px;
 			}
 
 			img.zoom-island {
@@ -113,11 +118,30 @@
 			.col{
 				flex: 1;
 			}
+			pre {
+				tab-size: 3;
+			}
+			span.line-icon {
+				display: none;
+			}
+			span.line-annotation {
+				display: none;
+			}
+			code.highlight-line-icon tr.highlight-line span.line-icon {
+				display: inline;
+			}
 			.particular-logo {
 				position: fixed;
 				height: 80px;
 				z-index: 30;
 				left: 20px;
+				bottom: 20px;
+			}
+			.twitter-blog {
+				position: fixed;
+				height: 80px;
+				z-index: 30;
+				right: 20px;
 				bottom: 20px;
 			}
 		</style>
@@ -128,6 +152,9 @@
 			<aside class="particular-logo">
 				<img src="images/particular-logo-2.svg" height="100em"/>
 			</aside>
+			<aside class="twitter-blog">
+				<div>@SzymonPobiega | exactly-once.github.io</div>
+			</aside>
 			<div class="slides">
 				<section>
 					<h3>In the cloud</h3>
@@ -137,28 +164,15 @@
 					<p><a href="https://www.linkedin.com/in/szymonpobiega/">linkedin.com/in/SzymonPobiega</a></p>
 				</section>
 				<section>
-					<h2 class="fragment">Domain-Driven Design</h2>
-					<h2 class="fragment">Event Sourcing</h2>
-					<h2 class="fragment">Message delivery &amp; processing</h2>
+					<h2>Domain-Driven Design</h2>
+					<h2>Event Sourcing</h2>
+					<img src="images/particular-logo-2.svg" style="padding-bottom: 0px; padding-top: 0px" height="100em"/>
 				</section>
 				<section>
 					<h1><p>Broker?</p>
 						<p>But why?</p>
 					</h1>
 				</section>
-				<section>
-						<h3>
-						<pre class="stretch"><code class="sql" data-noescape data-trim data-line-numbers="2|6|4|5|7">
-	with msg as (
-		select top (1) * from Msg 
-			with (
-				updlock, 
-				readpast) 
-			order by Seq
-	) delete from msg output Payload
-						</code></pre>
-						</h3>
-					</section>
 				<section>
 					<h2>What defines architecture?</h2>
 					<h3 class="fragment">Availability of capital</h3>
@@ -263,9 +277,9 @@
 				<section>
 					<img src="images/what-do-we-want.png" width="30%" style="float: right"/>
 					<ul style="width: 60%;">
-						<li class="fragment"><h3>Don't lose messages</h3></li>
-						<li class="fragment"><h3>Outcome the same no matter how many times we process the message (idempotence)</h3></li>
-						<li class="fragment"><h3>Don't leak non-durable state (ghost messages)</h3></li>
+						<li class="fragment"><h3>Don't lose messages 🗑️</h3></li>
+						<li class="fragment"><h3>Apply state change only once 👯‍♂️</h3></li>
+						<li class="fragment"><h3>Don't leak non-durable state 👻</h3></li>
 					</ul>
 				</section>
 				<section>
@@ -331,13 +345,29 @@
 					<img src="images/messaging-model-transaction.png" class="stretch"/>
 				</section>
 				<section>
-					<h1>De-duplication</h1>
+					<h1>Deduplication</h1>
 				</section>
 				<section>
 					<img src="images/messaging-model-outbox-transaction.png" class="stretch"/>
 				</section>
 				<section>
 					<img src="images/messaging-model-outbox.png" class="stretch"/>
+				</section>
+				<section>
+					<h3>
+					<pre class="stretch"><code class="csharp" data-noescape data-trim data-line-numbers="1|2|3|4|6|9|10|10I|1|2|6|9|10|1|2|6|7">
+var outbox = await Load(incoming.Id);
+if (outbox == null) {
+	var (state, outgoing) = Process(incoming);
+	await Save(incoming.Id, state, outgoing);
+}
+if (outbox.Dispatched) {
+	return;
+}
+await Dispatch(incoming.Id);
+await MarkAsDispatched(incoming.Id);<span class="line-icon">🔥🔥🔥</span>
+					</code></pre>
+					</h3>
 				</section>
 				<section>
 					<img src="images/messaging-model-outbox-data.png" class="stretch"/>
@@ -349,17 +379,83 @@
 					<img src="images/messaging-model-outbox-tech-nsb.png" class="stretch"/>
 				</section>
 				<section>
-					<h3>De-duplication record is created when message is processed</h3>
-					<h3 class="fragment">De-duplication record is present in <span style="color: red;">at least one</span> store</h3>
+					<h3>
+					<pre class="stretch"><code class="csharp" data-noescape data-trim data-line-numbers="4">
+var outbox = await Load(incoming.Id);
+if (outbox == null) {
+	var (state, outgoing) = Process(incoming);
+	await Save(incoming.Id, state, outgoing);
+}
+if (outbox.Dispatched) {
+	return;
+}
+await Dispatch(incoming.Id);
+await MarkAsDispatched(incoming.Id);
+					</code></pre>
+					</h3>
+				</section>
+				<section>
+					<img src="images/partitions-single.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/partitions-simple.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/partitions-simple-overflow.png" class="stretch"/>
+				</section>
+				<section>
+					<h3>Deduplication record is created when message is processed</h3>
+					<h3 class="fragment"><span class="fragment strike">Deduplication record exists</span></h3>
+					<h3 class="fragment">Deduplication record is present in <span style="color: red;">at least one</span> store</h3>
 				</section>
 				<section>
 					<img src="images/messaging-model-outbox-dedup.png" class="stretch"/>
+				</section>
+				<section>
+					<img src="images/partitions-dedup.png" class="stretch"/>
+				</section>
+				<section>
+					<h3>
+					<pre class="stretch"><code class="csharp" data-noescape data-trim data-line-numbers="1|4|5|6|7|9|10|10I|1|4|5|9|10|11|11I|1|2">
+if (HasDeduplicationEntry(incoming.Id)) {
+	return;
+}
+var outbox = await Load(incoming.Id);
+if (outbox == null) {
+	var (state, outgoing) = Process(incoming);
+	await Save(incoming.Id, state, outgoing);
+}
+await Dispatch(incoming.Id);
+await AddDeduplicationEntry(incoming.Id);<span class="line-icon">🔥🔥🔥</span>
+await RemoveOutbox(incoming.Id);<span class="line-icon">🔥🔥🔥</span>
+					</code></pre>
+					</h3>
 				</section>
 				<section>
 					<img src="images/messaging-model-outbox-dedup-tech.png" class="stretch"/>
 				</section>
 				<section>
 					<h1>Consistency</h1>
+				</section>
+				<section>
+					<h3>
+					<pre class="stretch"><code class="cmd" data-noescape data-trim data-line-numbers="1|2|5|8|11|11I">
+PUT /some-file.txt 200
+GET /some-file.txt 200
+
+#HasDeduplicationEntry
+GET /dedup/ABC 404
+
+#AddDeduplicationEntry
+PUT /dedup/ABC 200 
+
+#HasDeduplicationEntry
+GET /dedup/ABC <span class="line-icon">404 🤯</span>
+					</code></pre>
+					</h3>
+				</section>
+				<section>
+					<h1>RTFM</h1>
 				</section>
 				<section>
 					<blockquote cite="https://docs.aws.amazon.com/AmazonS3/latest/dev/Introduction.html#ConsistencyModel" style="width: 100%;">
@@ -382,10 +478,55 @@
 					<h2>How many times can you delete a thing?</h2>
 				</section>
 				<section>
+					<h3>
+					<pre class="stretch"><code class="csharp" data-noescape data-trim data-line-numbers="">
+var payload = await GetPayload(incoming.Id);
+if (payload == null) {
+	return;
+}
+					</code></pre>
+					</h3>
+				</section>
+				<section>
+					<h3>
+					<pre class="stretch"><code class="csharp" data-noescape data-trim data-line-numbers="1|2|3|4|6|7|8|10|11|11I|1|2|6|10|11|12">
+var outbox = await Load(incoming.Id);
+if (outbox == null) {
+	var (state, outgoing) = Process(incoming);
+	await Save(incoming.Id, state, outgoing);
+}
+if (!outbox.Checked) {
+	await CheckPayloads(outgoing);
+	await MarkAsChecked(incoming.Id);
+}
+await Dispatch(incoming.Id);
+await RemovePayload(incoming.Id);<span class="line-icon">🔥🔥🔥</span>
+await RemoveOutbox(incoming.Id);<span class="line-icon">🔥🔥🔥</span>
+					</code></pre>
+					</h3>
+				</section>
+				<section>
 					<img src="images/messaging-model-claim-check-2.png" class="stretch"/>
 				</section>
 				<section>
 					<img src="images/messaging-model-claim-check-tech-2.png" class="stretch"/>
+				</section>
+				<section>
+					<h3>
+					<pre class="stretch"><code class="cmd" data-noescape data-trim data-line-numbers="2|5|8|11|11I">
+#CheckPayloads
+PUT /claim-check/ABC 200
+
+#GetPayload
+GET /claim-check/ABC 200 
+
+#RemovePayload
+DELETE /claim-check/ABC 200
+
+#GetPayload
+GET /claim-check/ABC <span class="line-icon">200 🤯</span>
+					</code></pre>
+					</h3>
 				</section>
 				<section>
 					<h2>When can two services communicate?</h2>
@@ -401,12 +542,16 @@
 				</section>
 				<section>
 					<h3 class="fragment">Message broker is an implementation detail</h3>
-					<h3 class="fragment">De-duplication protocol is part of the contract</h3>
+					<h3 class="fragment">Deduplication protocol is part of the contract</h3>
 				</section>
 				<section>
 					<h3 class="fragment">Cloud requires different mental models for technology</h3>
 					<h3 class="fragment">Using SQL database as a message queue can get you quite far</h3>
 					<h3 class="fragment">Exactly-once message processing is possible for infinite scale databases</h3>
+				</section>
+				<section>
+					<h3>exactly-once.github.io</h3>
+					<img src="images/blog.png" class="stretch" style="padding-bottom: 50px"/>
 				</section>
 				<section>
 					<h1>Thank you!</h1>
@@ -415,15 +560,6 @@
 					<p><a href="https://twitter.com/SzymonPobiega">twitter.com/SzymonPobiega</a></p>
 					<p><a href="https://www.linkedin.com/in/szymonpobiega/">linkedin.com/in/SzymonPobiega</a></p>
 				</section>
-				<section>
-					<img src="images/blog.png" class="stretch"/>
-				</section>
-			</div>
-		</div>
-
-		<div id="hidden" style="display:none;">
-			<div id="header">
-				<div id="footer-left">@SzymonPobiega | exactly-once.github.io</div>
 			</div>
 		</div>
 
@@ -454,7 +590,7 @@
 			// Full list of configuration options available at:
 			// https://github.com/hakimel/reveal.js#configuration
 			Reveal.initialize({
-				controls: true,
+				controls: false,
 				progress: true,
 				history: true,
 				center: true,
